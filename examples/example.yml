@@ -27,6 +27,7 @@ default_group_policy: &default_group_policy
 default_project_policy: &default_project_policy
   visibility: "private"
   git_strategy: fetch
+  default_branch: main
   build_timeout: 3600
   ci_config_path:
   group_runners_enabled: true
@@ -46,37 +47,53 @@ default_project_policy: &default_project_policy
   resolve_outdated_diff_discussions: false
   shared_runners_enabled: true
   squash_option: default_on
-  access_levels:
-    build_access_level: enabled
-    container_registry_access_level: enabled
-    environments_access_level: disabled
-    feature_flags_access_level: disabled
-    forking_access_level: enabled
-    issues_access_level: enabled
-    merge_requests_access_level: enabled
-    pages_access_level: enabled
-    releases_access_level: enabled
-    repository_access_level: enabled
-    snippets_access_level: enabled
-    wiki_access_level: enabled
-  branch:
-    default: main
-    protected: true
+  snippets_enabled: true
+  container_registry_enabled: true
+  service_desk_enabled: false
+  security_and_compliance_enabled: true
+  issues_access_level: enabled
+  repository_access_level: enabled
+  merge_requests_access_level: enabled
+  forking_access_level: enabled
+  wiki_access_level: enabled
+  builds_access_level: enabled
+  snippets_access_level: enabled
+  pages_access_level: private
+  analytics_access_level: enabled
+  container_registry_access_level: enabled
+  security_and_compliance_access_level: private
+  releases_access_level: enabled
+  environments_access_level: enabled
+  feature_flags_access_level: enabled
+  infrastructure_access_level: enabled
+  monitor_access_level: enabled
+  model_experiments_access_level: enabled
+  model_registry_access_level: enabled
+  compliance_frameworks: []
+
+branch_defaults: &branch_defaults
+  - name: main
     allow_force_push: false
-    push_initial_commit: true
-    merge_access_level: 40
-    push_access_level: 0
-    unprotect_access_level: 40
-    autoclose_issues_on_default: true
-    name_template: "%{id}-%{title}"
-    code_owner_approval_required: true
-  merge_request:
-    allow_author_approval: false
-    allow_committer_approval: true
-    allow_overrides_to_approver_list_per_merge_request: true
-    retain_approvals_on_push: false
-    selective_code_owner_removals: false
-    require_reauthentication_to_approve: false
+    merge_access_levels:
+      - access_level: 30
+    push_access_levels:
+      - access_level: 0
+    unprotect_access_levels:
+      - access_level: 40
+    code_owner_approval_required: False
+  # - name: master
+  #   allow_force_push: false
+  #   merge_access_level: 40
+  #   push_access_level: 0
+  #   unprotect_access_level: 40
+  #   code_owner_approval_required: true
+  # merge_request:
+  #   allow_author_approval: false
+  #   allow_committer_approval: true
+  #   allow_overrides_to_approver_list_per_merge_request: true
+  #   retain_approvals_on_push: false
+  #   selective_code_owner_removals: false
+  #   require_reauthentication_to_approve: false
 
 default_service_policy: &default_service_policy
     auto_devops_enabled: False
@@ -132,6 +149,7 @@ organization:
   type: gitlab
   configure_service: true
   configure_groups: true
+  configure_projects: true
   service: *default_service_policy
   auto_create_groups: true
   groups:
@@ -139,24 +157,27 @@ organization:
       description: "Example description"
       policy: *default_group_policy
       members: *default_members
-      subgroups:
+      subgroups: #WIP
       projects:
       - name: test2
         policy:
           visibility: private
           public_jobs: true
+          compliance_frameworks: []
+          issues_access_level: private
+          branch: *branch_defaults
 
-    - name: Example2
-      description: "Example2 description"
-      policy: *default_group_policy
-      members:
-        - name: user1
-          access_level: 30
-        - name: user2
-          access_level: 40
-    - name: Example3
-      description: "Example3 description"
-      policy: *default_group_policy
+    # - name: Example2
+    #   description: "Example2 description"
+    #   policy: *default_group_policy
+    #   members:
+    #     - name: user1
+    #       access_level: 30
+    #     - name: user2
+    #       access_level: 40
+    # - name: Example3
+    #   description: "Example3 description"
+    #   policy: *default_group_policy
       # projects:
       # - name: test
 

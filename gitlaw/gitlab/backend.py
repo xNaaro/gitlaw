@@ -27,8 +27,9 @@ class GitlabBackend:
         print("Configuring service...")
         Settings(self.gl, self.config.get('service')).manager()
         for group in self.config.get('groups'):
-            print(f"Configuring group {group.get('name')} settings...")
-            Groups(self.gl, group).manager(auto_create_groups=self.config.get('auto_create_groups', True))
+            Groups(self.gl, group).manager(configure_groups=self.config.get('configure_groups', True),
+                                           configure_projects=self.config.get('configure_projects', True),
+                                           auto_create_groups=self.config.get('auto_create_groups', True))
 
     def handle_auth(self, server_url, server_auth_token) -> object:
         """Init gitlab object with auth.
